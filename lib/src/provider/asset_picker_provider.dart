@@ -351,6 +351,9 @@ class DefaultAssetPickerProvider
     if (page == 0) {
       _currentAssets.clear();
     }
+    /// remove image width or height is 0
+    list.removeWhere((AssetEntity entity)=> entity.type == AssetType.image && (entity.width == 0 || entity.height == 0));
+
     _currentAssets.addAll(list);
     _hasAssetsToDisplay = _currentAssets.isNotEmpty;
     notifyListeners();
@@ -406,8 +409,13 @@ class DefaultAssetPickerProvider
       return null;
     }
     final AssetEntity asset = assets.single;
+
     // Obtain the thumbnail only when the asset is image or video.
     if (asset.type != AssetType.image && asset.type != AssetType.video) {
+      return null;
+    }
+    /// image width or height is 0 return null
+    if(asset.width == 0 || asset.height == 0){
       return null;
     }
     final Uint8List? data = await asset.thumbnailDataWithSize(
